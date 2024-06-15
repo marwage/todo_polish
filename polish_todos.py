@@ -1,4 +1,5 @@
 import json
+import re
 
 import cohere
 
@@ -26,17 +27,11 @@ def update_todos(todos: list):
 
 
 def extract_json(text: str):
-    text_lines = text.splitlines()
-    json_lines = []
-    is_json = False
-    for lin in text_lines:
-        if is_json:
-            if lin == "```":
-                break
-            json_lines.append(lin)
-        if lin == "```json":
-            is_json = True
-    json_str = "\n".join(json_lines)
+    patt = r"```json((.|\n)*)```"
+    mat = re.search(patt, text)
+    if mat is None:
+        raise ValueError("Match is None")
+    json_str = mat.group(1)
     json_obj = json.loads(json_str)
     return json_obj
 
